@@ -1,31 +1,33 @@
 package ravana
 
 import (
+	"fmt"
+	"os"
 	"ravana/lib/console"
-	"ravana/lib/core/intruder"
-	"ravana/lib/core/proxy"
-	"ravana/lib/core/repeater"
+	//"ravana/lib/core/intruder"
+	//"ravana/lib/core/proxy"
+	//"ravana/lib/core/repeater"
 )
 
 // the basic struct
 type Ravana struct {
-	pro proxy.Proxy
-	inr intruder.Intruder
-	rep repeater.Repeater
+	//pro proxy.Proxy
+	//inr intruder.Intruder
+	//rep repeater.Repeater
 	cli console.Console
 
 	// greatwhite: any errors go here
 	serr error
 }
 
-// pseudo-contructor
+// New() creates a new ravana
 // param proxy_port: port for the proxy to listen on
-func New(proxy_port int) (Ravana, error) {
+func New(proxyPort int) (Ravana, error) {
 	r := Ravana{}
 
-	r.pro, r.serr = proxy.New(proxy_port)
-	r.inr, r.serr = intruder.New()
-	r.rep, r.serr = repeater.New()
+	//r.pro, r.serr = proxy.New(proxy_port)
+	//r.inr, r.serr = intruder.New()
+	//r.rep, r.serr = repeater.New()
 	r.cli, r.serr = console.New()
 
 	return r, r.serr
@@ -51,8 +53,10 @@ func (r Ravana) Run() {
 
 func handler(cmd console.Action) {
 	// TODO(greatwhite)
+	fmt.Println(cmd)
 }
 
 func shutdown(err error) {
 	// TODO(greatwhite)
+	os.Exit(0)
 }
