@@ -2,6 +2,7 @@ package ravana
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"ravana/lib/console"
 	//"ravana/lib/core/intruder"
@@ -35,6 +36,7 @@ func New(proxyPort int) (Ravana, error) {
 
 // starts the run loop
 func (r Ravana) Run() {
+	showBanner()
 	cmd := console.GetNopAction()
 
 	for cmd != console.GetExitAction() {
@@ -59,4 +61,14 @@ func handler(cmd console.Action) {
 func shutdown(err error) {
 	// TODO(greatwhite)
 	os.Exit(0)
+}
+
+func authorInfo() string {
+	return "\n====[ Ravana version 0.1BETA\n==[ Coded by: GreatWhite(@gr3a7wh173) and InfosecGuruji\n====[ Type 'help' to begin\n"
+}
+func showBanner() {
+	art, _ := ioutil.ReadFile("banner.txt")
+	banner := string(art)
+	banner += authorInfo()
+	fmt.Println(banner)
 }
