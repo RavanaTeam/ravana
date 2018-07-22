@@ -55,7 +55,7 @@ func (r Ravana) Run() {
 
 func handler(cmd console.Action) {
 	// TODO(greatwhite)
-	fmt.Println(cmd)
+	fmt.Println(cmd.Command)
 }
 
 func shutdown(err error) {

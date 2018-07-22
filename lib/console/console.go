@@ -9,9 +9,9 @@ import (
 
 // type struct for action
 type Action struct {
-	command string
-	module  string
-	args    [10]string
+	Command string
+	Module  string
+	Args    [10]string
 }
 
 // type struct for console
@@ -45,9 +45,16 @@ func GetNopAction() Action {
 
 // GetExitAction returns the exit action
 func GetExitAction() Action {
-	return Action{
-		command: "exit",
-	}
+	a := Action{}
+	a.Command = "exit"
+	return a
+}
+
+// GetHelpActiion returns the help function
+func GetHelpAction() Action {
+	a := Action{}
+	a.Command = "help"
+	return a
 }
 
 // private function
@@ -55,24 +62,33 @@ func GetExitAction() Action {
 func parse(text string) Action {
 	/*
 	* Actions are made up of
-	* 1. The command: start, stop, status, restart or config
-	* 2. The module: proxy, intruder or repeater
-	* 3. The args: Everything else
+	* 1. The Command: start, stop, status, restart or config
+	* 2. The Module: proxy, intruder or repeater
+	* 3. The Args: Everything else
 	*
-	* An Action will look like so: [command] [module] [[arg1], [arg2]..[arg10]]
+	* An Action will look like so: [Command] [Module] [[arg1], [arg2]..[arg10]]
 	 */
 
 	// TODO(greatwhite): better parsing than just splits
+	// FIXME(greatwhite): doesn't return proper values
 	a := Action{}
 	broken := strings.Split(text, " ")
 
-	a.command = broken[0]
-	a.module = broken[1]
-
-	i := 0
-	for i = 2; i < len(broken); i++ {
-		a.args[i-2] = broken[i]
+	// fmt.Println(len(broken))
+	if len(broken) >= 3 {
+		a.Command = broken[0]
+		a.Module = broken[1]
+		i := 0
+		for i = 2; i < len(broken); i++ {
+			a.Args[i-2] = broken[i]
+		}
+		return a
+	} else if len(broken) == 1 {
+		if broken[0] == "exit" {
+			return GetExitAction()
+		} else if broken[0] == "help" {
+			return GetHelpAction()
+		}
 	}
-
-	return a
+	return GetNopAction()
 }
