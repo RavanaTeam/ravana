@@ -64,7 +64,11 @@ func shutdown(err error) {
 }
 
 func authorInfo() string {
-	return "\n====[ Ravana version 0.1BETA\n==[ Coded by: GreatWhite(@gr3a7wh173) and InfosecGuruji\n====[ Type 'help' to begin\n"
+	info := "\n====[Ravana version 0.1BETA\n"
+	info += "==[Coded by: GreatWhite(@gr3a7wh173) and InfosecGuruji\n"
+	info += "====[Github: https://github.com/RavanaTeam/Ravana\n\n"
+	info += "Type 'help' to begin\n"
+	return info
 }
 func showBanner() {
 	art, _ := ioutil.ReadFile("banner.txt")
