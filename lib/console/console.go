@@ -12,31 +12,36 @@ type Action struct {
 	Command string
 	Module  string
 	Args    [10]string
+	Reason  string // reason for err msg
 }
 
-// type struct for console
-type Console struct {
-	// TODO(greatwhite): what does a CLI need?
-}
-
-// New() returns a new console instance
-func New() (Console, error) {
-
-	return Console{}, nil
-}
-
-// Prompt() prompt's the user for input and takes it
-func (cli Console) Prompt() Action {
+// Prompt prompt's the user for input and takes it
+func Prompt(context string) Action {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("ravana>")
+	prompt := "ravana"
+
+	if context != "" {
+		prompt += "(" + context + ")"
+	}
+	prompt += "> "
+
+	fmt.Print(prompt)
 
 	// TODO(greatwhite): Actually handle the error
 	text, _ := reader.ReadString('\n')
+	if strings.TrimSuffix(text, "\r\n") == "" {
+		return GetNopAction()
+	}
 
 	return parse(text)
 }
 
 // static functions
+
+// IsInvalid checks if an Action is invalid
+func IsInvalid(act Action) bool {
+	return act.Reason != ""
+}
 
 // GetNopAction returns an empty Action
 func GetNopAction() Action {
@@ -57,6 +62,14 @@ func GetHelpAction() Action {
 	return a
 }
 
+// GetInvalidAction returns the invalid action
+func GetInvalidAction(data string) Action {
+	return Action{
+		Command: "invalid",
+		Reason:  data,
+	}
+}
+
 // private function
 
 func parse(text string) Action {
@@ -70,15 +83,24 @@ func parse(text string) Action {
 	 */
 
 	// TODO(greatwhite): better parsing than just splits
-	// FIXME(greatwhite): doesn't return proper values
 	a := Action{}
 	broken := strings.Split(text, " ")
+	if len(broken) > 12 {
+		return GetInvalidAction("More than 10 arguments passed")
+	}
+
+	// get rid of all the newlines
+	for index, element := range broken {
+		broken[index] = strings.TrimSuffix(element, "\r\n")
+	}
 
 	// fmt.Println(len(broken))
-	if len(broken) >= 3 {
+	// fmt.Println(broken)
+
+	if len(broken) >= 2 {
 		a.Command = broken[0]
 		a.Module = broken[1]
-		i := 0
+		i := len(broken) + 2
 		for i = 2; i < len(broken); i++ {
 			a.Args[i-2] = broken[i]
 		}
@@ -88,7 +110,9 @@ func parse(text string) Action {
 			return GetExitAction()
 		} else if broken[0] == "help" {
 			return GetHelpAction()
+		} else if broken[0] == "back" {
+			return Action{Command: "back"}
 		}
 	}
-	return GetNopAction()
+	return GetInvalidAction("Invalid")
 }

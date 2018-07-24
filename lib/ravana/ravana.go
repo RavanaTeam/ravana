@@ -15,33 +15,38 @@ type Ravana struct {
 	//pro proxy.Proxy
 	//inr intruder.Intruder
 	//rep repeater.Repeater
-	cli console.Console
 
 	// greatwhite: any errors go here
 	serr error
 }
 
+// the module being interacted with
+var globalContext string
+
 // New() creates a new ravana
 // param proxy_port: port for the proxy to listen on
 func New(proxyPort int) (Ravana, error) {
 	r := Ravana{}
+	globalContext = ""
 
 	//r.pro, r.serr = proxy.New(proxy_port)
 	//r.inr, r.serr = intruder.New()
 	//r.rep, r.serr = repeater.New()
-	r.cli, r.serr = console.New()
 
 	return r, r.serr
 }
 
 // starts the run loop
 func (r Ravana) Run() {
-	showBanner()
 	cmd := console.GetNopAction()
+	exitact := console.GetExitAction()
 
-	for cmd != console.GetExitAction() {
+	showBanner()
+	fmt.Println("Type 'help' to begin")
+
+	for cmd != exitact {
 		// fetch the command
-		cmd = r.cli.Prompt()
+		cmd = console.Prompt(globalContext)
 
 		// handle the action
 		handler(cmd)
@@ -54,8 +59,32 @@ func (r Ravana) Run() {
 // private functions
 
 func handler(cmd console.Action) {
-	// TODO(greatwhite)
-	fmt.Println(cmd.Command)
+	if console.IsInvalid(cmd) {
+		printInvalid(cmd.Reason)
+	} else if cmd == console.GetNopAction() {
+		// do nothing
+	} else if cmd == console.GetHelpAction() {
+		showUsage()
+	} else {
+		if cmd.Command == "use" {
+			globalContext = cmd.Module
+		} else if cmd.Command == "back" {
+			globalContext = ""
+		}
+	}
+}
+
+func showUsage() {
+	// TODO(greatwhite): generate the help message dynamically.
+	help := "Help\n"
+	help += "----\n\n"
+	help += "COMMAND\t\tDESCRIPTION\n"
+	help += "help\t\tdisplay this message\n"
+	fmt.Println(help)
+}
+
+func printInvalid(reason string) {
+	fmt.Println("INVALID COMMAND: " + reason)
 }
 
 func shutdown(err error) {
@@ -64,10 +93,8 @@ func shutdown(err error) {
 }
 
 func authorInfo() string {
-	info := "\n====[Ravana version 0.1BETA\n"
-	info += "==[Coded by: GreatWhite(@gr3a7wh173) and InfosecGuruji\n"
-	info += "====[Github: https://github.com/RavanaTeam/Ravana\n\n"
-	info += "Type 'help' to begin\n"
+	info := "\n====| Ravana version 0.1BETA Copyleft RavanaTeam\n"
+	info += "====| Github: https://github.com/RavanaTeam/Ravana\n"
 	return info
 }
 func showBanner() {
