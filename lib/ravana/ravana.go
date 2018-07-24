@@ -80,6 +80,8 @@ func showUsage() {
 	help += "----\n\n"
 	help += "COMMAND\t\tDESCRIPTION\n"
 	help += "help\t\tdisplay this message\n"
+	help += "use\t\tUse a module\n"
+	help += "back\t\tSwitch back to the main context\n"
 	fmt.Println(help)
 }
 
